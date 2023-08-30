@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  YuanShen:
+    build: .
+    image: yuan:v4.0
+    container_name: YuanShen
+    restart: unless-stopped
+    ports:
+      - 81:80                 # 很大概率宿主机的80端口被占用
+      - 27017:27017           # 远程连接mongodb
+      - 22102:22102/udp       # 必须为udp
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./:/srv
+    command: ["bash", "entrypoint.sh"]
+    stdin_open: true
+    tty: true
+
+# 目前假设nginx不是docker容器服务，而是直接运行在宿主机上，则将networs以后直接删除即可
+# 如果nginx也是docker容器服务，可将nginx、mongo、yuanshen抽离为单独的容器，并加入同一个网络：
+networks:
+  default:
+    name: YourExistDockerNetName
+    external: true
